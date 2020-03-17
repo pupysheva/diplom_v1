@@ -10,7 +10,7 @@ setup(
     install_requires=[
         "numpy>=1.16.4 ",
         "numba>=0.38.0",
-        "pandas>=1.0.1"
+        "pandas>=0.25.0"
     ],
     name="DIPLOMv1",
     packages=find_packages(),
