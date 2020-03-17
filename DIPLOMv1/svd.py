@@ -107,6 +107,7 @@ class SVD():
 
             else:
                 self._on_epoch_end(start)
+
         self.pu = pu
         self.qi = qi
         self.bu = bu
@@ -140,7 +141,7 @@ class SVD():
 
         return self
 
-    def predict_pair(self, u_id, i_id, clip=False):#clip=True):
+    def predict_pair(self, u_id, i_id, clip=False):
         """Returns the model rating prediction for a given user/item pair.
         Args:
             u_id (int): a user id.
