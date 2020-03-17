@@ -91,22 +91,18 @@ class SVD():
 
             pu, qi, bu, bi = _run_epoch(X, pu, qi, bu, bi, self.global_mean,
                                         self.n_factors, self.lr, self.reg)
+            val_metrics = _compute_val_metrics(X_val, pu, qi, bu, bi,
+                                                               self.global_mean,
+                                                               self.n_factors)
 
+            val_loss, val_rmse, val_mae = val_metrics
+            list_val_rmse.append(val_rmse)
+
+            self._on_epoch_end(start, val_loss, val_rmse, val_mae)
             if self.early_stopping:
-                val_metrics = _compute_val_metrics(X_val, pu, qi, bu, bi,
-                                                   self.global_mean,
-                                                   self.n_factors)
-
-                val_loss, val_rmse, val_mae = val_metrics
-                list_val_rmse.append(val_rmse)
-
-                self._on_epoch_end(start, val_loss, val_rmse, val_mae)
-
                 if self._early_stopping(list_val_rmse):
                     break
-
-            else:
-                self._on_epoch_end(start)
+                    
         self.pu = pu
         self.qi = qi
         self.bu = bu
