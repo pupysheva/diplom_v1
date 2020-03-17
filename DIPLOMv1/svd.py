@@ -96,13 +96,12 @@ class SVD():
                                                                self.n_factors)
 
             val_loss, val_rmse, val_mae = val_metrics
-            list_val_rmse.append(val_rmse)
 
-            self._on_epoch_end(start, val_loss, val_rmse, val_mae)
             if self.early_stopping:
+                list_val_rmse.append(val_rmse)
                 if self._early_stopping(list_val_rmse):
                     break
-
+            self._on_epoch_end(start, val_loss, val_rmse, val_mae)
         self.pu = pu
         self.qi = qi
         self.bu = bu
