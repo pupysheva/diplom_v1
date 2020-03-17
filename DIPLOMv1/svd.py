@@ -102,7 +102,7 @@ class SVD():
             if self.early_stopping:
                 if self._early_stopping(list_val_rmse):
                     break
-                    
+
         self.pu = pu
         self.qi = qi
         self.bu = bu
@@ -225,9 +225,9 @@ class SVD():
         """
         end = time.time()
 
-        if self.early_stopping:
-            print('val_loss: {:.2f}'.format(val_loss), end=' - ')
-            print('val_rmse: {:.2f}'.format(val_rmse), end=' - ')
-            print('val_mae: {:.2f}'.format(val_mae), end=' - ')
+
+        print('val_loss: {:.2f}'.format(val_loss), end=' - ')
+        print('val_rmse: {:.2f}'.format(val_rmse), end=' - ')
+        print('val_mae: {:.2f}'.format(val_mae), end=' - ')
 
         print('took {:.1f} sec'.format(end - start))
