@@ -232,8 +232,8 @@ class SVD():
         """
         end = time.time()
 
-        print('val_loss: {:.2f}'.format(val_loss), end=' - ')
-        print('val_rmse: {:.2f}'.format(val_rmse), end=' - ')
-        print('val_mae: {:.2f}'.format(val_mae), end=' - ')
+        print('val_loss: {:.3f}'.format(val_loss), end=' - ')
+        print('val_rmse: {:.3f}'.format(val_rmse), end=' - ')
+        print('val_mae: {:.3f}'.format(val_mae), end=' - ')
 
         print('took {:.1f} sec'.format(end - start))
