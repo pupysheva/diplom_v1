@@ -80,7 +80,7 @@ class SVD():
         pu, qi, bu, bi = _initialization(n_user, n_item, self.n_factors)
 
         if self.early_stopping:
-            list_val_rmse = [10]
+            list_val_rmse = [float('inf')]
 
         # Run SGD
         for epoch_ix in range(self.n_epochs):
@@ -92,18 +92,20 @@ class SVD():
             pu, qi, bu, bi = _run_epoch(X, pu, qi, bu, bi, self.global_mean,
                                         self.n_factors, self.lr, self.reg)
 
-            if self.early_stopping:
+            
+            if X_val is not None:
                 val_metrics = _compute_val_metrics(X_val, pu, qi, bu, bi,
-                                                   self.global_mean,
-                                                   self.n_factors)
-
+                                                       self.global_mean,
+                                                       self.n_factors)
+                
                 val_loss, val_rmse, val_mae = val_metrics
-                list_val_rmse.append(val_rmse)
-
                 self._on_epoch_end(start, val_loss, val_rmse, val_mae)
+                if self.early_stopping:
+                    
+                    list_val_rmse.append(val_rmse)
 
-                if self._early_stopping(list_val_rmse):
-                    break
+                    if self._early_stopping(list_val_rmse):
+                        break
 
             else:
                 self._on_epoch_end(start)
@@ -133,7 +135,7 @@ class SVD():
         print('Preprocessing data...\n')
         X = self._preprocess_data(X)
 
-        if early_stopping:
+        if X_val is not None:
             X_val = self._preprocess_data(X_val, train=False)
 
         self.global_mean = np.mean(X[:, 2])
@@ -141,7 +143,7 @@ class SVD():
 
         return self
 
-    def predict_pair(self, u_id, i_id, clip=False):
+    def predict_pair(self, u_id, i_id, clip=False):#clip=True):
         """Returns the model rating prediction for a given user/item pair.
         Args:
             u_id (int): a user id.
@@ -230,9 +232,8 @@ class SVD():
         """
         end = time.time()
 
-        if self.early_stopping:
-            print('val_loss: {:.2f}'.format(val_loss), end=' - ')
-            print('val_rmse: {:.2f}'.format(val_rmse), end=' - ')
-            print('val_mae: {:.2f}'.format(val_mae), end=' - ')
+        print('val_loss: {:.2f}'.format(val_loss), end=' - ')
+        print('val_rmse: {:.2f}'.format(val_rmse), end=' - ')
+        print('val_mae: {:.2f}'.format(val_mae), end=' - ')
 
         print('took {:.1f} sec'.format(end - start))
