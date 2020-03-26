@@ -9,20 +9,19 @@ from .utils import timer
 
 
 class SVD():
-    """Implements Simon Funk SVD algorithm engineered during the Netflix Prize.
+    """Реализация алгоритма Simon Funk SVD 
     Attributes:
-        lr (float): learning rate.
-        reg (float): regularization factor.
-        n_epochs (int): number of SGD iterations.
-        n_factors (int): number of latent factors.
-        global_mean (float): ratings arithmetic mean.
-        pu (numpy array): users latent factor matrix.
-        qi (numpy array): items latent factor matrix.
-        bu (numpy array): users biases vector.
-        bi (numpy array): items biases vector.
-        early_stopping (boolean): whether or not to stop training based on a
-            validation monitoring.
-        shuffle (boolean): whether or not to shuffle data before each epoch.
+        lr (float): скорость обучения
+        reg (float): коэффициент регуляризации
+        n_epochs (int): количество итераций
+        n_factors (int): количество признаков
+        global_mean (float): среднее по всем оценкам
+        pu (numpy array): матрица признаков пользователей
+        qi (numpy array): матрица признаков элементов
+        bu (numpy array): вектор смециений пользователей
+        bi (numpy array): вектор смециений элемнетов
+        early_stopping (boolean): стоит ли прекратить обучение на основе вычисления ошибок на валидационной выборке
+        shuffle (boolean): стоит ли перемешивать данные перед каждой эпохой.
     """
 
     def __init__(self, learning_rate=.005, regularization=0.02, n_epochs=20,
@@ -36,13 +35,12 @@ class SVD():
         self.max_rating = max_rating
 
     def _preprocess_data(self, X, train=True):
-        """Maps users and items ids to indexes and returns a numpy array.
+        """Сопоставляет идентификаторы пользователей и элементов с индексами и возвращает массив NumPy.
         Args:
-            X (pandas DataFrame): dataset.
-            train (boolean): whether or not X is the training set or the
-                validation set.
+            X (pandas DataFrame): dataset
+            train (boolean): флаг, который определяет является ли Х обучающим набором
         Returns:
-            X (numpy array): mapped dataset.
+            X (numpy array): сопоставленный набор данных
         """
         X = X.copy()
 
@@ -67,12 +65,11 @@ class SVD():
         return X
 
     def _sgd(self, X, X_val):
-        """Performs SGD algorithm, learns model weights.
+        """Алгоритм SGD
         Args:
-            X (numpy array): training set, first column must contains users
-                indexes, second one items indexes, and third one ratings.
-            X_val (numpy array or `None`): validation set with same structure
-                as X.
+            X (numpy array): обучающий набор, первый столбец должен содержать индексы пользователей, 
+		второго - индексы элементов, и третьего - рейтинга.
+            X_val (numpy array or `None`): валидационный набор данных
         """
         n_user = len(np.unique(X[:, 0]))
         n_item = len(np.unique(X[:, 1]))
@@ -82,7 +79,7 @@ class SVD():
         if self.early_stopping:
             list_val_rmse = [float('inf')]
 
-        # Run SGD
+        # SGD
         for epoch_ix in range(self.n_epochs):
             start = self._on_epoch_begin(epoch_ix)
 
@@ -117,18 +114,15 @@ class SVD():
 
     @timer(text='\nTraining took ')
     def fit(self, X, X_val=None, early_stopping=False, shuffle=False):
-        """Learns model weights.
+        """Настройка параметров модели
         Args:
-            X (pandas DataFrame): training set, must have `u_id` for user id,
-                `i_id` for item id and `rating` columns.
-            X_val (pandas DataFrame, defaults to `None`): validation set with
-                same structure as X.
-            early_stopping (boolean): whether or not to stop training based on
-                a validation monitoring.
-            shuffle (boolean): whether or not to shuffle the training set
-                before each epoch.
+            X (pandas DataFrame): обучающий набор, должен иметь столбец `u_id` для идентификатора пользователя,
+                столбец «i_id» для идентификатора элемента и «rating».
+            X_val (pandas DataFrame, defaults to `None`): валидационный набор данных
+            early_stopping (boolean): стоит ли прекратить обучение на основе вычисления ошибок на валидационной выборке
+	    shuffle (boolean): стоит ли перемешивать данные перед каждой эпохой.
         Returns:
-            self (SVD object): the current fitted object.
+            self (SVD object): обученная модель
         """
         self.early_stopping = early_stopping
         self.shuffle = shuffle
@@ -144,14 +138,13 @@ class SVD():
         return self
 
     def predict_pair(self, u_id, i_id, clip=False):#clip=True):
-        """Returns the model rating prediction for a given user/item pair.
+        """Возвращает прогноз рейтинга модели для данной пары пользователь - элемент.
         Args:
-            u_id (int): a user id.
-            i_id (int): an item id.
-            clip (boolean, default is `True`): whether to clip the prediction
-                or not.
+            u_id (int): идентификатор пользователя
+            i_id (int): идентификатор элемента
+            clip (boolean, default is `True`): стоит ли округлять прогноз или нет
         Returns:
-            pred (float): the estimated rating for the given user/item pair.
+            pred (float): рейтинг для данной пары пользователь - элемент
         """
         user_known, item_known = False, False
         pred = self.global_mean
@@ -176,13 +169,12 @@ class SVD():
         return pred
 
     def predict(self, X):
-        """Returns estimated ratings of several given user/item pairs.
+        """Возвращает оценки нескольких заданных пар пользователь - элемент
         Args:
-            X (pandas DataFrame): storing all user/item pairs we want to
-                predict the ratings. Must contains columns labeled `u_id` and
-                `i_id`.
+            X (pandas DataFrame): все пары пользователь - элемент, для которых мы хотим
+                предсказывать рейтинги. Должен содержать столбцы `u_id` и `i_id`.
         Returns:
-            predictions: list, storing all predictions of the given user/item
+            predictions: список с прогнозами для пар пользователь - элемент
                 pairs.
         """
         predictions = []
@@ -193,14 +185,13 @@ class SVD():
         return predictions
 
     def _early_stopping(self, list_val_rmse, min_delta=.001):
-        """Returns True if validation rmse is not improving.
-        Last rmse (plus `min_delta`) is compared with the second to last.
+        """Возвращает True, если проверка rmse не улучшается
+        Последнее значение rmse (плюс `min_delta`) сравнивается с предпоследним
         Agrs:
-            list_val_rmse (list): ordered validation RMSEs.
-            min_delta (float, defaults to .001): minimun delta to arg for an
-                improvement.
+            list_val_rmse (list): список вычесленных ошибок RMSE
+            min_delta (float, defaults to .001): малое значение дельты
         Returns:
-            (boolean): whether or not to stop training.
+            (boolean): стоит ли прекратить обучение
         """
         if list_val_rmse[-1] + min_delta > list_val_rmse[-2]:
             return True
@@ -208,11 +199,11 @@ class SVD():
             return False
 
     def _on_epoch_begin(self, epoch_ix):
-        """Displays epoch starting log and returns its starting time.
+        """Отображает журнал начала эпохи
         Args:
-            epoch_ix: integer, epoch index.
+            epoch_ix (integer): индекс эпохи
         Returns:
-            start (float): starting time of the current epoch.
+            start (float): время начала текущей эпохи
         """
         start = time.time()
         end = '  | ' if epoch_ix < 9 else ' | '
@@ -221,14 +212,12 @@ class SVD():
         return start
 
     def _on_epoch_end(self, start, val_loss=None, val_rmse=None, val_mae=None):
-        """
-        Displays epoch ending log. If self.verbose compute and display
-        validation metrics (loss/rmse/mae).
+        """Отображение журнала окончания эпохи. Отображение метрик (val_loss/ val_rmse / val_mae).
         # Arguments
-            start (float): starting time of the current epoch.
-            val_loss: float, validation loss
-            val_rmse: float, validation rmse
-            val_mae: float, validation mae
+            start (float): время начала текущей эпохи
+            val_loss (float): validation loss
+            val_rmse (float): validation rmse
+            val_mae (float): validation mae
         """
         end = time.time()
 

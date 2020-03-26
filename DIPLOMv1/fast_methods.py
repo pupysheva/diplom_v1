@@ -13,14 +13,14 @@ def _shuffle(X):
 def _initialization(n_user, n_item, n_factors):
     """Инициализация смещений и матриц признаков пользователей и элементов.
     Args:
-        n_user (int): количество пользователей.
-        n_item (int): количество пользователей.
-        n_factors (int): количество признаков.
+        n_user (int): количество пользователей
+        n_item (int): количество пользователей
+        n_factors (int): количество признаков
     Returns:
-        pu (numpy array): матрица признаков пользователей.
-        qi (numpy array): матрица признаков элементов.
-        bu (numpy array): вектор смециений пользователей.
-        bi (numpy array): вектор смециений элемнетов.
+        pu (numpy array): матрица признаков пользователей
+        qi (numpy array): матрица признаков элементов
+        bu (numpy array): вектор смециений пользователей
+        bi (numpy array): вектор смециений элемнетов
     """
     pu = np.random.normal(0, .1, (n_user, n_factors))
     qi = np.random.normal(0, .1, (n_item, n_factors))
@@ -35,20 +35,20 @@ def _initialization(n_user, n_item, n_factors):
 def _run_epoch(X, pu, qi, bu, bi, global_mean, n_factors, lr, reg):
     """Runs an epoch, updating model weights (pu, qi, bu, bi).
     Args:
-        X (numpy array): training set.
-        pu (numpy array): users latent factor matrix.
-        qi (numpy array): items latent factor matrix.
-        bu (numpy array): users biases vector.
-        bi (numpy array): items biases vector.
-        global_mean (float): ratings arithmetic mean.
-        n_factors (int): number of latent factors.
-        lr (float): learning rate.
-        reg (float): regularization factor.
+        X (numpy array): тренировочное множество
+        pu (numpy array): матрица признаков пользователей
+        qi (numpy array): матрица признаков элементов
+        bu (numpy array): вектор смециений пользователей
+        bi (numpy array): вектор смециений элемнетов
+        global_mean (float): среднее по всем оценкам
+        n_factors (int): количество признаков
+        lr (float): скорость обучения
+        reg (float): коэффициент регуляризации
     Returns:
-        pu (numpy array): users latent factor matrix updated.
-        qi (numpy array): items latent factor matrix updated.
-        bu (numpy array): users biases vector updated.
-        bi (numpy array): items biases vector updated.
+        pu (numpy array): обновленная матрица признаков пользователей
+        qi (numpy array): обновленная матрица признаков элементов
+        bu (numpy array): обновленный вектор смециений пользователей
+        bi (numpy array): обновленный вектор смециений элемнетов
     """
     for i in range(X.shape[0]):
         user, item, rating = int(X[i, 0]), int(X[i, 1]), X[i, 2]
@@ -80,13 +80,13 @@ def _run_epoch(X, pu, qi, bu, bi, global_mean, n_factors, lr, reg):
 def _compute_val_metrics(X_val, pu, qi, bu, bi, global_mean, n_factors):
     """Computes validation metrics (loss, rmse, and mae).
     Args:
-        X_val (numpy array): validation set.
-        pu (numpy array): users latent factor matrix.
-        qi (numpy array): items latent factor matrix.
-        bu (numpy array): users biases vector.
-        bi (numpy array): items biases vector.
-        global_mean (float): ratings arithmetic mean.
-        n_factors (int): number of latent factors.
+        X_val (numpy array): валидационный набор данных
+        pu (numpy array): матрица признаков пользователей
+        qi (numpy array): матрица признаков элементов
+        bu (numpy array): вектор смециений пользователей
+        bi (numpy array): вектор смециений элемнетов
+        global_mean (float): среднее по всем оценкам
+        n_factors (int): количество признаков
     Returns:
         (tuple of floats): validation loss, rmse and mae.
     """

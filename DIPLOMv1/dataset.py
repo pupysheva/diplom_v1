@@ -20,20 +20,6 @@ VARIANTS = {
 }
 
 def get_data_dir_path(data_dir_path=None):
-    """Returns the path of the funk-svd data directory.
-    This folder is used to store large datasets to avoid downloading them
-    several times.
-    By default the data dir is set to a folder named 'funk_svd_data' in the
-    user home folder. Alternatively, it can be set by the 'FUNK_SVD_DATA'
-    environment variable or programmatically by giving an explicit
-    `data_dir_path`.
-    If the folder does not already exist, it is automatically created.
-    Args:
-        data_dir_path (str, default to `None`): explicit data directory path
-            for large datasets.
-    Returns:
-        data_dir_path (str): explicit data directory path for large datasets.
-    """
     if data_dir_path is None:
         default = os.path.join('~', 'funk_svd_data')
         data_dir_path = os.environ.get('FUNK_SVD_DATA', default=default)
@@ -63,15 +49,6 @@ def ml_ratings_csv_to_df(csv_path, variant):
 
 
 def fetch_ml_ratings(data_dir_path=None, variant='20m'):
-    """Fetches MovieLens ratings dataset.
-    Args:
-        data_dir_path (string): explicit data directory path to MovieLens
-            ratings file. Defaults to `None`.
-        variant (string): movie lens dataset variant, could be any of
-            ['100k', '1m', '10m', '20m']. Defaults to '20m'.
-    Returns:
-        df (pandas.DataFrame): containing the dataset.
-    """
     if data_dir_path is None:
         data_dir_path = get_data_dir_path(data_dir_path)
         dirname = 'ml-' + variant
@@ -104,7 +81,6 @@ def fetch_ml_ratings(data_dir_path=None, variant='20m'):
         return fetch_ml_ratings(variant=variant)
 
     else:
-        # Download the ZIP file before calling back itself
         print('Downloading data...')
         with urllib.request.urlopen(url) as r, open(zip_path, 'wb') as f:
             shutil.copyfileobj(r, f)
