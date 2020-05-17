@@ -22,8 +22,8 @@ def _initialization(n_user, n_item, n_factors):
         bu (numpy array): вектор смециений пользователей
         bi (numpy array): вектор смециений элемнетов
     """
-    pu = np.random.normal(0, .1, (n_user, n_factors))
-    qi = np.random.normal(0, .1, (n_item, n_factors))
+    pu = np.random.normal(0, .01, (n_user, n_factors))
+    qi = np.random.normal(0, .01, (n_item, n_factors))
 
     bu = np.zeros(n_user)
     bi = np.zeros(n_item)
